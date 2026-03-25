@@ -1948,9 +1948,140 @@ function processUpload(rawData,filename){
   banner.classList.add('show');
   setTimeout(()=>banner.classList.remove('show'),8000);
   
+  // Save to persistent storage
+  const saveData={
+    v:2,ts:new Date().toISOString(),file:filename,
+    months:activeMonths,
+    monthly:monthly,chainMonthly:chainMonthly,byState:byState,byChain:byChain,byRegion:byRegion,
+    ulocs:Object.fromEntries(Object.entries(ulocs).map(([mo,chains])=>[mo,Object.fromEntries(Object.entries(chains).map(([c,s])=>[c,[...s]]))])),
+    totalEv:totalEv,totalRev:totalRev,totalUn:totalUn,totalSh:totalSh
+  };
+  saveDashData(saveData);
+  
   // Switch to 2026 tab
   switchYear('y26');
 }
+
+const BLOB_URL='https://jsonblob.com/api/jsonBlob/019d231a-ba82-7abc-b13f-7464e5b58a96';
+
+function saveDashData(data){
+  fetch(BLOB_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(r=>{if(r.ok)console.log('Data saved to cloud');else console.error('Save failed:',r.status);})
+    .catch(e=>console.error('Save error:',e));
+}
+
+function loadDashData(){
+  fetch(BLOB_URL).then(r=>r.json()).then(data=>{
+    if(!data||!data.v||data.v<2||!data.months)return;
+    console.log('Loading saved data from',data.ts,'file:',data.file);
+    
+    const monthly=data.monthly;
+    const chainMonthly=data.chainMonthly;
+    const byState=data.byState;
+    const byChain=data.byChain;
+    const byRegion=data.byRegion;
+    const activeMonths=data.months;
+    const totalEv=data.totalEv;
+    const totalRev=data.totalRev;
+    const totalUn=data.totalUn;
+    const totalSh=data.totalSh;
+    const netUn=Math.round(totalUn*0.87);
+    const netRev=Math.round(totalRev*0.87);
+    const conv=totalSh>0?((netUn/totalSh)*100).toFixed(1):'0';
+    const upe=totalEv>0?(totalUn/totalEv).toFixed(2):'0';
+    const nupe=totalEv>0?(netUn/totalEv).toFixed(2):'0';
+    const avgShop=totalEv>0?(totalSh/totalEv).toFixed(2):'0';
+    const chains=['Whole Foods','Sprouts','Central Market','Erewhon','Independents'];
+    
+    // Update KPIs
+    const kpis=document.querySelectorAll('#kpiGrid26 .kpi-val');
+    const newVals=[
+      (totalEv||0).toLocaleString(),
+      (totalUn||0).toLocaleString(),
+      (netUn||0).toLocaleString(),
+      '$'+(totalRev||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}),
+      '$'+(netRev||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}),
+      (totalSh||0).toLocaleString(),
+      avgShop||'0',
+      (conv||'0')+'%',
+      upe||'0',
+      nupe||'0'
+    ];
+    kpis.forEach((el,i)=>{if(i<newVals.length)el.textContent=newVals[i];});
+    
+    // Update month bar buttons
+    const bar=document.getElementById('monthBar26');
+    if(bar){
+      let btns='<span class="mo-label">View Month</span><button class="mo-btn active" onclick="setMonth26(\'YTD\')">YTD</button>';
+      activeMonths.forEach(m=>{btns+='<button class="mo-btn" onclick="setMonth26(\''+m+'\')">'+m+'</button>';});
+      bar.innerHTML=btns;
+    }
+    
+    // Update charts
+    const evArr=activeMonths.map(m=>monthly[m].ev);
+    const saArr=activeMonths.map(m=>monthly[m].sa);
+    const unArr=activeMonths.map(m=>monthly[m].un);
+    const shArr=activeMonths.map(m=>monthly[m].sh);
+    const avgArr=saArr.map((s,i)=>evArr[i]?+(s/evArr[i]).toFixed(2):0);
+    const netUnArr=unArr.map(u=>Math.round(u*0.87));
+    
+    const chartUpdates={
+      'c26_evChain':{labels:activeMonths,datasets:chains.map(ch=>({label:ch,data:activeMonths.map(m=>(chainMonthly[ch]&&chainMonthly[ch][m])||0),backgroundColor:CC[ch],borderRadius:3,barPercentage:.7}))},
+      'c26_avgD':{labels:activeMonths,datasets:[lc('Avg $/Demo',avgArr,'#ED1C24')]},
+      'c26_units':{labels:activeMonths,datasets:[lc('Gross Units',unArr,'#3B82F6')]},
+      'c26_netUnits':{labels:activeMonths,datasets:[lc('Net Units',netUnArr,'#8B5CF6')]},
+      'c26_shop':{labels:activeMonths,datasets:[lc('Shoppers',shArr,'#F59E0B')]},
+      'c26_eng':{labels:activeMonths,datasets:[
+        {label:'Customer Engagements',data:shArr,backgroundColor:'#F59E0B40',borderColor:'#F59E0B',borderWidth:2,borderRadius:3,barPercentage:.6,yAxisID:'y'},
+        {label:'Events',data:evArr,type:'line',borderColor:'#22C55E',backgroundColor:'#22C55E20',pointBackgroundColor:'#22C55E',borderWidth:2.5,pointRadius:4,tension:.4,yAxisID:'y1'}
+      ]}
+    };
+    Object.entries(chartUpdates).forEach(([id,cfg])=>{
+      try{const c=Chart.getChart(document.getElementById(id));if(c){c.data.labels=cfg.labels;c.data.datasets=cfg.datasets;c.update('none');}}catch(e){}
+    });
+    
+    // Update chain/state/region
+    const chArr=chains.map(ch=>{const d=byChain[ch]||{ev:0,rev:0};return{name:ch,events:d.ev,revenue:d.rev};}).filter(x=>x.events>0).sort((a,b)=>b.revenue-a.revenue);
+    buildBars('bars26',chArr,totalEv);
+    buildChainTable('ctb26',chArr,totalEv);
+    
+    const stArr=Object.entries(byState).filter(x=>x[0]).map(([s,d])=>({s,e:d.ev,r:d.rev})).sort((a,b)=>b.e-a.e);
+    buildStateTable('stb26',stArr,totalEv);
+    
+    try{const c=Chart.getChart(document.getElementById('c26_chainRev'));if(c){c.data.labels=chArr.map(x=>x.name);c.data.datasets=[{data:chArr.map(x=>x.revenue),backgroundColor:chArr.map(x=>CC[x.name]),borderWidth:0,hoverOffset:8}];c.update('none');}}catch(e){}
+    
+    const rgColors={'West':'#ED1C24','Central':'#F97316','Southeast':'#FACC15','Southwest':'#22C55E','Atlantic':'#3B82F6'};
+    const rgData=Object.entries(byRegion).sort((a,b)=>b[1]-a[1]);
+    try{const c=Chart.getChart(document.getElementById('c26_regD'));if(c){c.data.labels=rgData.map(x=>x[0]);c.data.datasets=[{data:rgData.map(x=>x[1]),backgroundColor:rgData.map(x=>rgColors[x[0]]||'#666'),borderWidth:0,hoverOffset:8}];c.update('none');}}catch(e){}
+    
+    try{const c=Chart.getChart(document.getElementById('c26_topSt'));if(c){c.data.labels=stArr.map(x=>x.s);c.data.datasets=[{data:stArr.map(x=>x.e),backgroundColor:stArr.map((_,i)=>i<3?'#ED1C24':i<7?'#F97316':'#3B82F6'),borderRadius:4,barPercentage:.7}];c.update('none');}}catch(e){}
+    
+    // Update uloc chart
+    try{
+      const ulocData=data.ulocs||{};
+      const c=Chart.getChart(document.getElementById('c26_uloc'));
+      if(c){
+        c.data.labels=activeMonths;
+        c.data.datasets=chains.map(ch=>({label:ch,data:activeMonths.map(m=>(ulocData[m]&&ulocData[m][ch])?ulocData[m][ch].length:0),backgroundColor:CC[ch],borderRadius:3,barPercentage:.7}));
+        c.update('none');
+      }
+    }catch(e){}
+    
+    // Store for month filter
+    window._savedData=data;
+    
+    // Show subtle indicator
+    const banner=document.getElementById('uploadBanner');
+    if(banner){
+      banner.textContent='\u2705 Showing saved data from '+data.file+' (uploaded '+ new Date(data.ts).toLocaleDateString()+')';
+      banner.classList.add('show');
+      setTimeout(()=>banner.classList.remove('show'),5000);
+    }
+  }).catch(e=>console.log('No saved data, using defaults'));
+}
+
+// Load saved data on page load (after charts are initialized)
+setTimeout(loadDashData,500);
 
 function animateKPI(el,newVal){
   const raw=el.textContent.trim();
