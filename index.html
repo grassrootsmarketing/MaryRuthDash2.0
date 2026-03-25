@@ -1027,14 +1027,16 @@ function switchYear(id) {
   document.querySelectorAll('.year-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.year-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  const btn=document.querySelector('.year-tab[onclick*="\''+id+'\'"]');
+  if(btn)btn.classList.add('active');
 }
 function subTab(yr,id) {
   const panel = document.getElementById(yr);
   panel.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
   panel.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  const btn=panel.querySelector('.stab[onclick*="\''+id+'\'"]');
+  if(btn)btn.classList.add('active');
 }
 
 // Chart defaults
