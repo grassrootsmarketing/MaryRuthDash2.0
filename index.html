@@ -1184,6 +1184,7 @@ new Chart(document.getElementById('c_projState'),{type:'bar',data:{labels:projSt
 // ============================================================
 function animateCounters(){
   document.querySelectorAll('.kpi-val').forEach(el=>{
+    if(el.dataset.animated)return;
     const raw=el.textContent.trim();
     const hasPrefix=raw.startsWith('$');
     const hasSuffix=raw.endsWith('%');
@@ -1194,9 +1195,9 @@ function animateCounters(){
     const decimals=isDecimal?(cleanNum.split('.')[1]||'').length:0;
     const duration=800;
     const start=performance.now();
-    const origColor=el.style.color;
     
     el.textContent=(hasPrefix?'$':'')+'0'+(hasSuffix?'%':'');
+    el.dataset.animated='1';
     
     function tick(now){
       const elapsed=now-start;
@@ -1216,11 +1217,7 @@ function animateCounters(){
   });
 }
 
-// Run on load and tab switch
-const origSwitchYear=window.switchYear;
-window.switchYear=function(id){origSwitchYear(id);setTimeout(animateCounters,100);};
-const origSubTab=window.subTab;
-window.subTab=function(yr,id){origSubTab(yr,id);setTimeout(animateCounters,100);};
+// Only animate once on page load — no animation on tab switches
 setTimeout(animateCounters,300);
 
 // ============================================================
