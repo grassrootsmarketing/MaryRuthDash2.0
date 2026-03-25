@@ -982,19 +982,26 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <!-- 2026 QUALITY ISSUES TAB -->
     <div id="qi26" class="tc">
       <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px 20px;margin-bottom:16px;border-left:4px solid #F59E0B">
-        <div style="font-size:12px;color:var(--td);line-height:1.6">Reported item quality issues extracted from the "What negative feedback did customers focus on?" field in Promomash event reports. Issues are auto-categorized by keyword matching. One event may contain multiple issue types. Only substantive feedback is included — generic "no complaints" responses are filtered out.</div>
+        <div style="font-size:12px;color:var(--td);line-height:1.6">Quality issues sourced from two Promomash fields: <strong>Customer Feedback</strong> (negative feedback from shoppers during demos) and <strong>BA Field Reports</strong> (operational issues noted by brand ambassadors in Extra Comments). One event may contain multiple issue types.</div>
       </div>
       <div class="cg">
-        <div class="cc"><div class="ct"><span class="i">📊</span> Issues by Category</div><canvas id="c26_qiCat" height="300"></canvas></div>
-        <div class="cc"><div class="ct"><span class="i">📈</span> Monthly Issue Trend</div><canvas id="c26_qiTrend" height="300"></canvas></div>
-        <div class="cc"><div class="ct"><span class="i">🏪</span> Issues by Chain</div><canvas id="c26_qiChain" height="260"></canvas></div>
-        <div class="cc full"><div class="ct"><span class="i">📋</span> Issue Summary</div>
+        <div class="cc"><div class="ct"><span class="i">🗣️</span> Customer Feedback Issues (680 reports)</div><canvas id="c26_qiCat" height="300"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">🔧</span> BA Field/Operational Issues (102 reports)</div><canvas id="c26_qiField" height="260"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">📈</span> Field Issues by Month</div><canvas id="c26_qiTrend" height="300"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">🏪</span> Field Issues by Chain</div><canvas id="c26_qiChain" height="260"></canvas></div>
+        <div class="cc full"><div class="ct"><span class="i">🗣️</span> Customer Feedback Summary</div>
           <table class="dt">
             <thead><tr><th>Category</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th><th>% of Reports</th></tr></thead>
-            <tbody id="qiTable26"></tbody>
+            <tbody id="qiCustTable26"></tbody>
           </table>
         </div>
-        <div class="cc full"><div class="ct"><span class="i">💬</span> Recent Reports <span style="font-size:11px;font-weight:400;color:var(--td)">(newest first, showing up to 50)</span></div>
+        <div class="cc full"><div class="ct"><span class="i">🔧</span> Field Issue Summary</div>
+          <table class="dt">
+            <thead><tr><th>Category</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th><th>% of Reports</th></tr></thead>
+            <tbody id="qiFieldTable26"></tbody>
+          </table>
+        </div>
+        <div class="cc full"><div class="ct"><span class="i">📋</span> Recent BA Field Reports <span style="font-size:11px;font-weight:400;color:var(--td)">(from Extra Comments, newest first)</span></div>
           <div id="qiReports26" style="max-height:500px;overflow-y:auto"></div>
         </div>
       </div>
@@ -1201,70 +1208,88 @@ new Chart(document.getElementById('c26_eng'),{type:'bar',data:{labels:M26,datase
 
 // ============================================================
 // ============================================================
-// 2026 QUALITY ISSUES
+// 2026 QUALITY ISSUES (from Negative Feedback + Extra Comments)
 // ============================================================
-const qiCategories=['Taste/Flavor','Sugar/Sweetener','Texture/Consistency','Price/Value','Packaging/Labeling','Size/Dosage','Freshness/Expiration','Ingredients/Allergens','Smell','Other'];
-const qiMonthly={
-  'Taste/Flavor':[151,104,122],
-  'Sugar/Sweetener':[44,44,27],
-  'Texture/Consistency':[41,42,28],
-  'Price/Value':[51,32,15],
-  'Packaging/Labeling':[35,23,20],
-  'Size/Dosage':[40,17,19],
-  'Freshness/Expiration':[15,10,10],
-  'Ingredients/Allergens':[10,5,9],
-  'Smell':[0,4,7],
-  'Other':[39,38,32]
-};
-const qiTotals=qiCategories.map(c=>qiMonthly[c].reduce((a,b)=>a+b,0));
-const qiTotalReports=680;
-const qiColors=['#ED1C24','#F59E0B','#8B5CF6','#3B82F6','#22C55E','#06B6D4','#EC4899','#F97316','#6366F1','#64748B'];
 
-new Chart(document.getElementById('c26_qiCat'),{type:'bar',data:{labels:qiCategories,datasets:[{data:qiTotals,backgroundColor:qiColors,borderRadius:4,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+// --- SECTION 1: Customer Feedback Issues (from negative feedback column) ---
+const qiCustCats=['Taste/Flavor','Sugar/Sweetener','Texture/Consistency','Price/Value','Packaging/Labeling','Size/Dosage','Ingredients/Allergens','Smell','Other'];
+const qiCustMonthly={'Taste/Flavor':[151,104,122],'Sugar/Sweetener':[44,44,27],'Texture/Consistency':[41,42,28],'Price/Value':[51,32,15],'Packaging/Labeling':[35,23,20],'Size/Dosage':[40,17,19],'Ingredients/Allergens':[10,5,9],'Smell':[0,4,7],'Other':[39,38,32]};
+const qiCustColors=['#ED1C24','#F59E0B','#8B5CF6','#3B82F6','#22C55E','#06B6D4','#F97316','#6366F1','#64748B'];
 
-new Chart(document.getElementById('c26_qiTrend'),{type:'bar',data:{labels:['Jan','Feb','Mar'],datasets:qiCategories.slice(0,5).map((c,i)=>({label:c,data:qiMonthly[c],backgroundColor:qiColors[i],borderRadius:3,barPercentage:.7}))},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'}}}});
+// --- SECTION 2: Field/Operational Issues (from BA Extra Comments) ---
+const qiFieldCats=['Merchandising/Display','Stock/Availability','Product Recall/Spoilage','Expired Product','Sticky/Clumping','Theft/Shrinkage','Packaging/Seal Issues'];
+const qiFieldMonthly={'Merchandising/Display':[29,8,7],'Stock/Availability':[11,8,8],'Product Recall/Spoilage':[1,0,18],'Expired Product':[7,1,2],'Sticky/Clumping':[3,1,3],'Theft/Shrinkage':[1,1,3],'Packaging/Seal Issues':[1,0,1]};
+const qiFieldColors=['#3B82F6','#F97316','#ED1C24','#EC4899','#8B5CF6','#64748B','#06B6D4'];
 
-new Chart(document.getElementById('c26_qiChain'),{type:'doughnut',data:{labels:['Whole Foods','Sprouts','Erewhon','Independents','Central Market'],datasets:[{data:[382,239,25,19,15],backgroundColor:[CC['Whole Foods'],CC['Sprouts'],CC['Erewhon'],CC['Independents'],CC['Central Market']],borderWidth:0,hoverOffset:8}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom'}}}});
+// Customer feedback chart
+new Chart(document.getElementById('c26_qiCat'),{type:'bar',data:{labels:qiCustCats,datasets:[{data:qiCustCats.map(c=>qiCustMonthly[c].reduce((a,b)=>a+b,0)),backgroundColor:qiCustColors,borderRadius:4,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Customer Feedback Issues (680 reports)',color:'#ccc',font:{size:12}}},scales:{x:{beginAtZero:true}}}});
 
-// Issue summary table
+// Field issues chart
+new Chart(document.getElementById('c26_qiField'),{type:'bar',data:{labels:qiFieldCats,datasets:[{data:qiFieldCats.map(c=>qiFieldMonthly[c].reduce((a,b)=>a+b,0)),backgroundColor:qiFieldColors,borderRadius:4,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Field/Operational Issues (102 BA reports)',color:'#ccc',font:{size:12}}},scales:{x:{beginAtZero:true}}}});
+
+// Monthly trend (field issues)
+new Chart(document.getElementById('c26_qiTrend'),{type:'bar',data:{labels:['Jan','Feb','Mar'],datasets:qiFieldCats.slice(0,5).map((c,i)=>({label:c,data:qiFieldMonthly[c],backgroundColor:qiFieldColors[i],borderRadius:3,barPercentage:.7}))},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'},title:{display:true,text:'Field Issues by Month',color:'#ccc',font:{size:12}}}}});
+
+// Chain breakdown
+new Chart(document.getElementById('c26_qiChain'),{type:'doughnut',data:{labels:['Whole Foods','Sprouts','Independents','Central Market'],datasets:[{data:[73,25,3,1],backgroundColor:[CC['Whole Foods'],CC['Sprouts'],CC['Independents'],CC['Central Market']],borderWidth:0,hoverOffset:8}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom'},title:{display:true,text:'Field Issues by Chain',color:'#ccc',font:{size:12}}}}});
+
+// Customer feedback table
 (function(){
-  const tb=document.getElementById('qiTable26');
+  const tb=document.getElementById('qiCustTable26');
   if(!tb)return;
-  qiCategories.forEach((cat,i)=>{
-    const vals=qiMonthly[cat];
+  qiCustCats.forEach((cat,i)=>{
+    const vals=qiCustMonthly[cat];
     const total=vals.reduce((a,b)=>a+b,0);
-    const pct=(total/qiTotalReports*100).toFixed(1);
-    tb.innerHTML+=`<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${qiColors[i]};margin-right:6px"></span><strong>${cat}</strong></td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td><td style="font-weight:700">${total}</td><td>${pct}%</td></tr>`;
+    const pct=(total/680*100).toFixed(1);
+    tb.innerHTML+=`<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${qiCustColors[i]};margin-right:6px"></span><strong>${cat}</strong></td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td><td style="font-weight:700">${total}</td><td>${pct}%</td></tr>`;
   });
 })();
 
-// Recent reports
+// Field issues table
+(function(){
+  const tb=document.getElementById('qiFieldTable26');
+  if(!tb)return;
+  qiFieldCats.forEach((cat,i)=>{
+    const vals=qiFieldMonthly[cat];
+    const total=vals.reduce((a,b)=>a+b,0);
+    const pct=(total/102*100).toFixed(1);
+    tb.innerHTML+=`<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${qiFieldColors[i]};margin-right:6px"></span><strong>${cat}</strong></td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td><td style="font-weight:700">${total}</td><td>${pct}%</td></tr>`;
+  });
+})();
+
+// Field reports list
 (function(){
   const el=document.getElementById('qiReports26');
   if(!el)return;
   const reports=[
-    {d:'03/24',v:'WFM Tenaya',st:'NV',c:'Whole Foods',cat:'Other',txt:'Customers were hesitant to try the vitamins without knowing more about their specific ingredients and sourcing.'},
-    {d:'03/23',v:'WFM Downtown Miami',st:'FL',c:'Whole Foods',cat:'Packaging/Labeling',txt:'Customer would like more clarity on the label about which product best suits their needs.'},
-    {d:'03/23',v:'WFM Cityline',st:'TX',c:'Whole Foods',cat:'Taste/Flavor',txt:'Shoppers did not care for the taste of the Morning Multivitamin Liquid — too much like kids\' medicine.'},
-    {d:'03/23',v:'WFM El Paso',st:'TX',c:'Whole Foods',cat:'Smell',txt:'Several customers said the Multi + Hair gummies had a strong vitamin smell.'},
-    {d:'03/23',v:'WFM Pasadena',st:'CA',c:'Whole Foods',cat:'Packaging/Labeling',txt:'Some customers didn\'t enjoy the plastic bottles, even though they\'re BPA-free.'},
-    {d:'03/22',v:'WFM Arbor Trails',st:'TX',c:'Whole Foods',cat:'Texture/Consistency',txt:'A few customers said the liquid multivitamin was thicker than expected — one compared it to Pepto-Bismol.'},
-    {d:'03/22',v:'Sprouts Philadelphia',st:'PA',c:'Sprouts',cat:'Texture/Consistency',txt:'Some didn\'t like the texture of the strips.'},
-    {d:'03/22',v:'WFM Midtown Miami',st:'FL',c:'Whole Foods',cat:'Taste/Flavor',txt:'Customer felt the hair growth gummies flavor had a slightly artificial taste.'},
-    {d:'03/22',v:'WFM Jamboree',st:'CA',c:'Whole Foods',cat:'Taste/Flavor',txt:'One man said the hair growth liquid multivitamin tastes like medicine.'},
-    {d:'03/22',v:'WFM Sherman Oaks',st:'CA',c:'Whole Foods',cat:'Price/Value',txt:'A small number of shoppers thought the taste of liquid vitamins was too strong. One said she perceives the brand as expensive.'},
-    {d:'03/22',v:'WFM Littleton',st:'CO',c:'Whole Foods',cat:'Taste/Flavor',txt:'Some folks reported the raspberry LMV as strong or tasting like medicine.'},
-    {d:'03/22',v:'WFM Bee Cave',st:'TX',c:'Whole Foods',cat:'Sugar/Sweetener',txt:'A customer asked if the gummies had less sugar options. Some preferred sugar-free versions.'},
-    {d:'03/21',v:'Sprouts Denver',st:'CO',c:'Sprouts',cat:'Price/Value',txt:'Multiple shoppers commented on the price point being high compared to competitors.'},
-    {d:'03/21',v:'WFM Brea',st:'CA',c:'Whole Foods',cat:'Taste/Flavor',txt:'Customers said the Liquid Morning tasted "strong" and "vitaminy" — some liked it, others did not.'},
-    {d:'03/21',v:'WFM Roosevelt Square',st:'IL',c:'Whole Foods',cat:'Size/Dosage',txt:'A couple customers felt the bottle size was small relative to the price.'},
-    {d:'03/20',v:'Sprouts Plano',st:'TX',c:'Sprouts',cat:'Taste/Flavor',txt:'Some shoppers were not fans of the liquid vitamin taste — described as "too herbal."'},
-    {d:'03/20',v:'WFM Union Square',st:'NY',c:'Whole Foods',cat:'Price/Value',txt:'Several NYers said the products are quality but pricey — asked about bulk deals or subscriptions.'},
-    {d:'03/19',v:'Sprouts Gilbert',st:'AZ',c:'Sprouts',cat:'Sugar/Sweetener',txt:'Customers wanted more sugar-free options across the gummy line.'},
-    {d:'03/19',v:'WFM La Jolla',st:'CA',c:'Whole Foods',cat:'Ingredients/Allergens',txt:'One customer with thyroid issues was concerned about the iodine content in certain products.'},
-    {d:'03/18',v:'Erewhon Venice',st:'CA',c:'Erewhon',cat:'Price/Value',txt:'Shoppers loved the products but several mentioned the price was a barrier to regular purchase.'}
+    {d:'03/23',v:'WFM Downtown Miami',st:'FL',cat:'Expired Product',txt:'Left coupons with vitamin team leader to distribute before they expired.'},
+    {d:'03/21',v:'WFM Merchants Walk',st:'GA',cat:'Theft/Shrinkage',txt:'Skin and hair products kept in limited quantities on shelves due to high theft — "please ask team member for assistance" signs posted.'},
+    {d:'03/20',v:'WFM Glendale',st:'CA',cat:'Product Recall/Spoilage',txt:'No MV hair growth gummies from batch 4/27 or 12/26 at this location.'},
+    {d:'03/20',v:'WFM Burbank',st:'CA',cat:'Product Recall/Spoilage',txt:'2 bottles of hair growth — one from batch 4/27 and one from 12/26 — pulled to send back.'},
+    {d:'03/19',v:'WFM Playa Vista',st:'CA',cat:'Product Recall/Spoilage',txt:'Bought 2 bottles of hair growth gummies from batch 4/27 for buyback.'},
+    {d:'03/19',v:'WFM East 57th Street',st:'NY',cat:'Product Recall/Spoilage',txt:'Found 3 bottles of Hair Multi gummies for buyback (BB 04/2027).'},
+    {d:'03/18',v:'WFM Brooklyn (Third & 3rd)',st:'NY',cat:'Product Recall/Spoilage',txt:'Found 2 bottles of recall 04/2027 Hair gummies and removed from shelf.'},
+    {d:'03/15',v:'Sprouts Peachtree Corners',st:'GA',cat:'Theft/Shrinkage',txt:'Hair growth is a "high theft item" — store only keeps 1-2 on shelves at a time.'},
+    {d:'03/15',v:'WFM Venice',st:'CA',cat:'Product Recall/Spoilage',txt:'Found 6 hair growth gummies from batch 4/27.'},
+    {d:'03/14',v:'WFM Union Station',st:'CO',cat:'Product Recall/Spoilage',txt:'Bought 3 of the 4/27 bad batches of Hair Growth gummies for reimbursement.'},
+    {d:'03/09',v:'WFM Northside',st:'GA',cat:'Packaging/Seal Issues',txt:'Purchased a bottle of LMM that was leaking on the shelves — photos attached.'},
+    {d:'03/08',v:'WFM Interbay',st:'WA',cat:'Sticky/Clumping',txt:'Store feedback: most bottles of the Multivitamin + Hair Growth gummies coming in with product stuck together.'},
+    {d:'03/07',v:'WFM Chandler',st:'AZ',cat:'Theft/Shrinkage',txt:'Vitamins manager reports ongoing theft issues with hair growth products — inventory shows 6 bottles but only 4 found on shelf.'},
+    {d:'03/05',v:'WFM Cicero (Sauganash)',st:'IL',cat:'Product Recall/Spoilage',txt:'Purchased several hair growth gummies to compare — all had white residue and weird smell across different lot numbers.'},
+    {d:'03/04',v:'WFM Duluth',st:'GA',cat:'Sticky/Clumping',txt:'Both gummies very difficult to extract from containers — stuck together in a big clump in the bottom half of the bottle.'},
+    {d:'03/03',v:'WFM Chicago Halsted',st:'IL',cat:'Product Recall/Spoilage',txt:'Only 3 peach mango hair growth gummies left — all had white crystallization and bad smell. Did not sample.'},
+    {d:'03/02',v:'WFM New York Broadway',st:'NY',cat:'Product Recall/Spoilage',txt:'Found one bottle of mold on Hair growth gummies LOT 2504075 (BB 04/2027).'},
+    {d:'03/01',v:'WFM West Seattle',st:'WA',cat:'Product Recall/Spoilage',txt:'Opened Multivitamin + Hair Growth gummies and found white crystallization and off smell inside.'},
+    {d:'02/20',v:'Sprouts North Scottsdale',st:'AZ',cat:'Sticky/Clumping',txt:'Customer reports hair gummies are very sticky inside the container — extremely hard to get out.'},
+    {d:'02/08',v:'WFM Roosevelt Square',st:'WA',cat:'Expired Product',txt:'1 bottle of magnesium calm was expired — likely bad product rotation in store.'},
+    {d:'01/29',v:'WFM Atlanta Midtown',st:'GA',cat:'Sticky/Clumping',txt:'Creatine gummies very sticky, many stuck together at bottom of bottle in a big clump — very hard to extract.'},
+    {d:'01/27',v:'Sprouts Woodland Hills',st:'CA',cat:'Expired Product',txt:'A lot of liposomal mushroom stock was expired and taken off shelves.'},
+    {d:'01/24',v:'WFM Sandy Springs',st:'GA',cat:'Sticky/Clumping',txt:'Creatine gummies VERY sticky — half stuck together at bottom of bottle. Required long tongs or knife to extract.'},
+    {d:'01/05',v:'Sprouts Decatur',st:'GA',cat:'Product Recall/Spoilage',txt:'Kids gummies purchased had white coating and were stuck together, especially bottom half of bottle. Photos included.'},
+    {d:'01/04',v:'WFM West Seattle',st:'WA',cat:'Packaging/Seal Issues',txt:'Top seal on some magnesium bottles was broken at this store. Photo included.'},
+    {d:'01/02',v:'WFM West Manhattan',st:'NY',cat:'Expired Product',txt:'8 bottles of Women\\'s Hair Growth liposomal were out of date.'}
   ];
-  const catColors={'Taste/Flavor':'#ED1C24','Sugar/Sweetener':'#F59E0B','Texture/Consistency':'#8B5CF6','Price/Value':'#3B82F6','Packaging/Labeling':'#22C55E','Size/Dosage':'#06B6D4','Freshness/Expiration':'#EC4899','Ingredients/Allergens':'#F97316','Smell':'#6366F1','Other':'#64748B'};
+  const catColors={'Product Recall/Spoilage':'#ED1C24','Sticky/Clumping':'#8B5CF6','Expired Product':'#EC4899','Packaging/Seal Issues':'#06B6D4','Theft/Shrinkage':'#64748B','Stock/Availability':'#F97316','Merchandising/Display':'#3B82F6'};
   reports.forEach(r=>{
     el.innerHTML+=`<div style="padding:12px 16px;border-bottom:1px solid var(--bd);font-size:12px;line-height:1.6">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
