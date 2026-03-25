@@ -1504,13 +1504,15 @@ function processUpload(rawData,filename){
   const chains=['Whole Foods','Sprouts','Central Market','Erewhon','Independents'];
   
   rawData.forEach(row=>{
+    try{
     const d=row['DATE'];if(!d)return;
     const date=new Date(d);
     if(isNaN(date.getTime()))return;
-    const mo=months[date.getMonth()];
+    const moIdx=date.getMonth();
+    if(moIdx<0||moIdx>11)return;
+    const mo=months[moIdx];
     const v=(row['VENUE NAME']||'').toString();
     const st=(row['STATE']||'').toString();
-    // Try multiple possible column names for robustness
     const units=parseInt(row['# TOTAL SALES'])||0;
     const rev=parseFloat(row['$ TOTAL SALES'])||0;
     const sampled=parseInt(
@@ -1521,6 +1523,7 @@ function processUpload(rawData,filename){
       row['How many customers sampled to? ']||0
     )||0;
     const c=chainOf(v);
+    if(!c)return;
     
     if(!monthly[mo])monthly[mo]={ev:0,sa:0,un:0,sh:0};
     monthly[mo].ev++;monthly[mo].sa+=rev;monthly[mo].un+=units;monthly[mo].sh+=sampled;
@@ -1542,6 +1545,7 @@ function processUpload(rawData,filename){
     if(!ulocs[mo])ulocs[mo]={};
     if(!ulocs[mo][c])ulocs[mo][c]=new Set();
     ulocs[mo][c].add(v);
+    }catch(e){console.error('Row parse error:',e,row);}
   });
   
   const activeMonths=months.filter(m=>monthly[m]);
@@ -1551,10 +1555,10 @@ function processUpload(rawData,filename){
   const totalSh=activeMonths.reduce((s,m)=>s+monthly[m].sh,0);
   const netUn=Math.round(totalUn*0.87);
   const netRev=Math.round(totalRev*0.87);
-  const conv=totalSh>0?((netUn/totalSh)*100).toFixed(1):0;
-  const upe=(totalUn/totalEv).toFixed(2);
-  const nupe=(netUn/totalEv).toFixed(2);
-  const avgShop=(totalSh/totalEv).toFixed(2);
+  const conv=totalSh>0?((netUn/totalSh)*100).toFixed(1):'0';
+  const upe=totalEv>0?(totalUn/totalEv).toFixed(2):'0';
+  const nupe=totalEv>0?(netUn/totalEv).toFixed(2):'0';
+  const avgShop=totalEv>0?(totalSh/totalEv).toFixed(2):'0';
   
   // Update 2026 KPIs with animation
   const kpiPanel=document.getElementById('y26');
