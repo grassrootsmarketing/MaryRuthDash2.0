@@ -25,6 +25,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .upload-banner{background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;display:none;letter-spacing:.3px}
 .upload-banner.show{display:block}
 .qi-mbtn,.qi-cbtn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--td);transition:all .2s}
+.month-bar{display:flex;gap:4px;padding:6px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.month-bar .mo-label{font-size:11px;font-weight:700;color:var(--td);text-transform:uppercase;letter-spacing:1px;padding:0 8px}
+.mo-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--td);transition:all .25s}
+.mo-btn:hover{background:rgba(255,255,255,.05);border-color:var(--bd)}
+.mo-btn.active{background:var(--r);color:#fff;border-color:var(--r)}
 .qi-mbtn.active{background:#F59E0B;color:#000;border-color:#F59E0B}
 .qi-cbtn.active{background:#3B82F6;color:#fff;border-color:#3B82F6}
 .qi-mbtn:hover,.qi-cbtn:hover{border-color:var(--td)}
@@ -656,7 +661,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
   </div>
   <div id="y26" class="year-panel active">
-    <div class="kpi-grid">
+    <div class="month-bar" id="monthBar26">
+      <span class="mo-label">View Month</span>
+      <button class="mo-btn active" onclick="setMonth26('YTD')">YTD</button>
+      <button class="mo-btn" onclick="setMonth26('Jan')">Jan</button>
+      <button class="mo-btn" onclick="setMonth26('Feb')">Feb</button>
+    </div>
+    <div class="kpi-grid" id="kpiGrid26">
       <div class="kpi-card"><div class="kpi-hdr"><div class="kpi-lbl">Total Events</div><div class="kpi-tip">?<div class="tip">Total demo events for MRO in 2026 year-to-date.</div></div></div><div class="kpi-val">645</div><div class="kpi-sub">2026 YTD</div></div>
       <div class="kpi-card"><div class="kpi-hdr"><div class="kpi-lbl">Units (Incl.)</div><div class="kpi-tip">?<div class="tip">Gross units sold including sample purchases.</div></div></div><div class="kpi-val">4,964</div><div class="kpi-sub">Gross unit sales</div></div>
       <div class="kpi-card"><div class="kpi-hdr"><div class="kpi-lbl">Net Units (Excl.)</div><div class="kpi-tip">?<div class="tip">Net units excluding samples purchased by brand ambassadors. ~90% of total.</div></div></div><div class="kpi-val">4,318</div><div class="kpi-sub">Net purchases</div></div>
@@ -1190,6 +1201,103 @@ const st26=[{s:'CA',e:120,r:18663.34},{s:'TX',e:114,r:24821.65},{s:'FL',e:106,r:
 const rg26=[{name:'West',events:157,color:'#ED1C24'},{name:'Southeast',events:151,color:'#FACC15'},{name:'Central',events:141,color:'#F97316'},{name:'Southwest',events:104,color:'#22C55E'},{name:'Atlantic',events:92,color:'#3B82F6'}];
 
 // 2026 Charts
+
+// Per-month breakdowns for month filter
+const st26m={
+  'Jan':[{s:'TX',e:70,r:18034.51},{s:'CA',e:67,r:11569.69},{s:'FL',e:60,r:16560.88},{s:'CO',e:32,r:2469.20},{s:'NY',e:26,r:3677.58},{s:'GA',e:23,r:14692.71},{s:'AZ',e:20,r:2820.89},{s:'IL',e:17,r:7634.04},{s:'PA',e:17,r:993.50},{s:'OR',e:9,r:1129.66},{s:'WA',e:9,r:1080.55},{s:'NV',e:8,r:1079.93},{s:'NM',e:7,r:1736.41},{s:'NJ',e:7,r:220.91},{s:'MD',e:6,r:428.75}],
+  'Feb':[{s:'CA',e:53,r:7093.65},{s:'FL',e:46,r:6020.00},{s:'TX',e:44,r:6787.14},{s:'AZ',e:24,r:4137.99},{s:'GA',e:22,r:9237.45},{s:'CO',e:16,r:798.71},{s:'NY',e:16,r:2324.06},{s:'PA',e:14,r:811.59},{s:'IL',e:10,r:3313.07},{s:'MD',e:6,r:426.84},{s:'NM',e:5,r:679.57},{s:'OR',e:5,r:439.27},{s:'NV',e:3,r:477.69},{s:'WA',e:3,r:140.96}]
+};
+const rg26m={
+  'Jan':[{name:'West',events:93,color:'#ED1C24'},{name:'Central',events:87,color:'#F97316'},{name:'Southeast',events:83,color:'#FACC15'},{name:'Southwest',events:59,color:'#22C55E'},{name:'Atlantic',events:56,color:'#3B82F6'}],
+  'Feb':[{name:'Southeast',events:68,color:'#FACC15'},{name:'West',events:64,color:'#ED1C24'},{name:'Central',events:54,color:'#F97316'},{name:'Southwest',events:45,color:'#22C55E'},{name:'Atlantic',events:36,color:'#3B82F6'}]
+};
+const ch26m={
+  'Jan':[{name:'Whole Foods',events:199,revenue:62572.50},{name:'Sprouts',events:154,revenue:18093.39},{name:'Central Market',events:7,revenue:1495.39},{name:'Independents',events:8,revenue:1443.13},{name:'Erewhon',events:10,revenue:524.80}],
+  'Feb':[{name:'Whole Foods',events:132,revenue:28203.09},{name:'Sprouts',events:104,revenue:12280.84},{name:'Central Market',events:8,revenue:915.55},{name:'Erewhon',events:12,revenue:680.74},{name:'Independents',events:11,revenue:607.77}]
+};
+
+function setMonth26(mo){
+  // Update button states
+  document.querySelectorAll('#monthBar26 .mo-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector('#monthBar26 .mo-btn[onclick*="\''+mo+'\'"]');
+  if(btn)btn.classList.add('active');
+  
+  let ev,sa,un,sh,cn,netUn,chData,stData,rgData,totalEv;
+  
+  if(mo==='YTD'){
+    ev=d26.ev.reduce((a,b)=>a+b,0);sa=d26.sa.reduce((a,b)=>a+b,0);un=d26.un.reduce((a,b)=>a+b,0);sh=d26.sh.reduce((a,b)=>a+b,0);
+    netUn=netUn26.reduce((a,b)=>a+b,0);
+    chData=ch26;stData=st26;rgData=rg26;totalEv=ev;
+  }else{
+    const i=M26.indexOf(mo);
+    if(i<0)return;
+    ev=d26.ev[i];sa=d26.sa[i];un=d26.un[i];sh=d26.sh[i];
+    netUn=netUn26[i];
+    chData=ch26m[mo]||ch26;stData=st26m[mo]||st26;rgData=rg26m[mo]||rg26;totalEv=ev;
+  }
+  
+  const netRev=Math.round(sa*0.87);
+  const conv=sh>0?((netUn/sh)*100).toFixed(1):'0';
+  const upe=ev>0?(un/ev).toFixed(2):'0';
+  const nupe=ev>0?(netUn/ev).toFixed(2):'0';
+  const avgShop=ev>0?(sh/ev).toFixed(2):'0';
+  const label=mo==='YTD'?'2026 YTD':mo+' 2026';
+  
+  // Animate KPIs
+  const kpis=document.querySelectorAll('#kpiGrid26 .kpi-val');
+  const newVals=[
+    (ev||0).toLocaleString(),
+    (un||0).toLocaleString(),
+    (netUn||0).toLocaleString(),
+    '$'+(sa||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}),
+    '$'+(netRev||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0}),
+    (sh||0).toLocaleString(),
+    avgShop,
+    conv+'%',
+    upe,
+    nupe
+  ];
+  kpis.forEach((el,idx)=>{if(idx<newVals.length)animateKPI(el,newVals[idx]);});
+  
+  // Update sub labels
+  const subs=document.querySelectorAll('#kpiGrid26 .kpi-sub');
+  if(subs[0])subs[0].textContent=label;
+  
+  // Update chain bars and tables
+  buildBars('bars26',chData,totalEv);
+  buildChainTable('ctb26',chData,totalEv);
+  buildStateTable('stb26',stData,totalEv);
+  
+  // Update chain revenue doughnut
+  try{
+    const cRev=Chart.getChart(document.getElementById('c26_chainRev'));
+    if(cRev){
+      cRev.data.labels=chData.map(c=>c.name);
+      cRev.data.datasets=[{data:chData.map(c=>c.revenue),backgroundColor:chData.map(c=>CC[c.name]),borderWidth:0,hoverOffset:8}];
+      cRev.update('active');
+    }
+  }catch(e){}
+  
+  // Update region doughnut
+  try{
+    const cReg=Chart.getChart(document.getElementById('c26_regD'));
+    if(cReg){
+      cReg.data.labels=rgData.map(r=>r.name);
+      cReg.data.datasets=[{data:rgData.map(r=>r.events),backgroundColor:rgData.map(r=>r.color),borderWidth:0,hoverOffset:8}];
+      cReg.update('active');
+    }
+  }catch(e){}
+  
+  // Update top states bar
+  try{
+    const cSt=Chart.getChart(document.getElementById('c26_topSt'));
+    if(cSt){
+      cSt.data.labels=stData.map(s=>s.s);
+      cSt.data.datasets=[{data:stData.map(s=>s.e),backgroundColor:stData.map((_,i)=>i<3?'#ED1C24':i<7?'#F97316':'#3B82F6'),borderRadius:4,barPercentage:.7}];
+      cSt.update('active');
+    }
+  }catch(e){}
+}
 new Chart(document.getElementById('c26_evChain'),{type:'bar',data:{labels:M26,datasets:Object.entries(mc26).map(([n,d])=>({label:n,data:d,backgroundColor:CC[n],borderRadius:3,barPercentage:.7}))},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'}}}});
 const ad26=d26.sa.map((s,i)=>+(s/d26.ev[i]).toFixed(2));
 new Chart(document.getElementById('c26_avgD'),{type:'line',data:{labels:M26,datasets:[lc('Avg $/Demo',ad26,'#ED1C24')]},options:{responsive:true,scales:{y:{beginAtZero:false}},plugins:{legend:{display:false}}}});
