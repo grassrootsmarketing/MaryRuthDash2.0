@@ -185,6 +185,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <button class="stab" onclick="subTab('y25','rq25')">🛒 Customer Requests</button>
       <button class="stab" onclick="subTab('y25','sp25')">📦 Monthly Planned Items</button>
       <button class="stab" onclick="subTab('y25','mr25')">🏬 Merchandising</button>
+      <button class="stab" onclick="subTab('y25','qi25')">⚠️ Quality Issues</button>
     </div>
     <div id="ov25" class="tc active"><div class="cg">
       <div class="cc"><div class="ct"><span class="i">📈</span> Monthly Events by Chain<div class="ct-tip">?<div class="tip">Total demo events each month, stacked by retail chain. Sourced from Promomash event records.</div></div></div><canvas id="c25_evChain" height="280"></canvas></div>
@@ -636,6 +637,19 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
     </div>
 
+    <!-- 2025 QUALITY ISSUES TAB -->
+    <div id="qi25" class="tc">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px 20px;margin-bottom:16px;border-left:4px solid #F59E0B">
+        <div style="font-size:12px;color:var(--td);line-height:1.6">Reported item quality issues for 2025 will be populated when 2025 analytics data containing the negative feedback column is uploaded. Issues are auto-categorized from the "What negative feedback did customers focus on?" field.</div>
+      </div>
+      <div class="ins-grid">
+        <div class="ins-card full" style="border-left:4px solid #F59E0B">
+          <div class="ins-title">⚠️ Quality Issues — 2025</div>
+          <div class="ins-desc">Upload the 2025 full-year analytics report to populate this tab with categorized quality issue data, trend charts, and individual reports.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div id="y26" class="year-panel active">
     <div class="kpi-grid">
@@ -661,6 +675,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <button class="stab" onclick="subTab('y26','rq26')">🛒 Customer Requests</button>
       <button class="stab" onclick="subTab('y26','sp26')">📦 Monthly Planned Items</button>
       <button class="stab" onclick="subTab('y26','mr26')">🏬 Merchandising</button>
+      <button class="stab" onclick="subTab('y26','qi26')">⚠️ Quality Issues</button>
     </div>
     <div id="ov26" class="tc active"><div class="cg">
       <div class="cc"><div class="ct"><span class="i">📈</span> Monthly Events by Chain<div class="ct-tip">?<div class="tip">Total demo events each month, stacked by retail chain. Sourced from Promomash event records.</div></div></div><canvas id="c26_evChain" height="280"></canvas></div>
@@ -964,6 +979,27 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
     </div>
 
+    <!-- 2026 QUALITY ISSUES TAB -->
+    <div id="qi26" class="tc">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px 20px;margin-bottom:16px;border-left:4px solid #F59E0B">
+        <div style="font-size:12px;color:var(--td);line-height:1.6">Reported item quality issues extracted from the "What negative feedback did customers focus on?" field in Promomash event reports. Issues are auto-categorized by keyword matching. One event may contain multiple issue types. Only substantive feedback is included — generic "no complaints" responses are filtered out.</div>
+      </div>
+      <div class="cg">
+        <div class="cc"><div class="ct"><span class="i">📊</span> Issues by Category</div><canvas id="c26_qiCat" height="300"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">📈</span> Monthly Issue Trend</div><canvas id="c26_qiTrend" height="300"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">🏪</span> Issues by Chain</div><canvas id="c26_qiChain" height="260"></canvas></div>
+        <div class="cc full"><div class="ct"><span class="i">📋</span> Issue Summary</div>
+          <table class="dt">
+            <thead><tr><th>Category</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th><th>% of Reports</th></tr></thead>
+            <tbody id="qiTable26"></tbody>
+          </table>
+        </div>
+        <div class="cc full"><div class="ct"><span class="i">💬</span> Recent Reports <span style="font-size:11px;font-weight:400;color:var(--td)">(newest first, showing up to 50)</span></div>
+          <div id="qiReports26" style="max-height:500px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- 2026 PROJECTIONS TAB -->
     <div id="pj26" class="tc">
       <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:var(--rad);padding:24px 28px;margin-bottom:20px;color:#fff">
@@ -1164,6 +1200,82 @@ new Chart(document.getElementById('c26_eng'),{type:'bar',data:{labels:M26,datase
 ]},options:{responsive:true,scales:{y:{beginAtZero:true,position:'left',title:{display:true,text:'Engagements',color:'#F59E0B'}},y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Events',color:'#22C55E'}}},plugins:{legend:{position:'bottom'}}}});
 
 // ============================================================
+// ============================================================
+// 2026 QUALITY ISSUES
+// ============================================================
+const qiCategories=['Taste/Flavor','Sugar/Sweetener','Texture/Consistency','Price/Value','Packaging/Labeling','Size/Dosage','Freshness/Expiration','Ingredients/Allergens','Smell','Other'];
+const qiMonthly={
+  'Taste/Flavor':[151,104,122],
+  'Sugar/Sweetener':[44,44,27],
+  'Texture/Consistency':[41,42,28],
+  'Price/Value':[51,32,15],
+  'Packaging/Labeling':[35,23,20],
+  'Size/Dosage':[40,17,19],
+  'Freshness/Expiration':[15,10,10],
+  'Ingredients/Allergens':[10,5,9],
+  'Smell':[0,4,7],
+  'Other':[39,38,32]
+};
+const qiTotals=qiCategories.map(c=>qiMonthly[c].reduce((a,b)=>a+b,0));
+const qiTotalReports=680;
+const qiColors=['#ED1C24','#F59E0B','#8B5CF6','#3B82F6','#22C55E','#06B6D4','#EC4899','#F97316','#6366F1','#64748B'];
+
+new Chart(document.getElementById('c26_qiCat'),{type:'bar',data:{labels:qiCategories,datasets:[{data:qiTotals,backgroundColor:qiColors,borderRadius:4,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+
+new Chart(document.getElementById('c26_qiTrend'),{type:'bar',data:{labels:['Jan','Feb','Mar'],datasets:qiCategories.slice(0,5).map((c,i)=>({label:c,data:qiMonthly[c],backgroundColor:qiColors[i],borderRadius:3,barPercentage:.7}))},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'}}}});
+
+new Chart(document.getElementById('c26_qiChain'),{type:'doughnut',data:{labels:['Whole Foods','Sprouts','Erewhon','Independents','Central Market'],datasets:[{data:[382,239,25,19,15],backgroundColor:[CC['Whole Foods'],CC['Sprouts'],CC['Erewhon'],CC['Independents'],CC['Central Market']],borderWidth:0,hoverOffset:8}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom'}}}});
+
+// Issue summary table
+(function(){
+  const tb=document.getElementById('qiTable26');
+  if(!tb)return;
+  qiCategories.forEach((cat,i)=>{
+    const vals=qiMonthly[cat];
+    const total=vals.reduce((a,b)=>a+b,0);
+    const pct=(total/qiTotalReports*100).toFixed(1);
+    tb.innerHTML+=`<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${qiColors[i]};margin-right:6px"></span><strong>${cat}</strong></td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td><td style="font-weight:700">${total}</td><td>${pct}%</td></tr>`;
+  });
+})();
+
+// Recent reports
+(function(){
+  const el=document.getElementById('qiReports26');
+  if(!el)return;
+  const reports=[
+    {d:'03/24',v:'WFM Tenaya',st:'NV',c:'Whole Foods',cat:'Other',txt:'Customers were hesitant to try the vitamins without knowing more about their specific ingredients and sourcing.'},
+    {d:'03/23',v:'WFM Downtown Miami',st:'FL',c:'Whole Foods',cat:'Packaging/Labeling',txt:'Customer would like more clarity on the label about which product best suits their needs.'},
+    {d:'03/23',v:'WFM Cityline',st:'TX',c:'Whole Foods',cat:'Taste/Flavor',txt:'Shoppers did not care for the taste of the Morning Multivitamin Liquid — too much like kids\' medicine.'},
+    {d:'03/23',v:'WFM El Paso',st:'TX',c:'Whole Foods',cat:'Smell',txt:'Several customers said the Multi + Hair gummies had a strong vitamin smell.'},
+    {d:'03/23',v:'WFM Pasadena',st:'CA',c:'Whole Foods',cat:'Packaging/Labeling',txt:'Some customers didn\'t enjoy the plastic bottles, even though they\'re BPA-free.'},
+    {d:'03/22',v:'WFM Arbor Trails',st:'TX',c:'Whole Foods',cat:'Texture/Consistency',txt:'A few customers said the liquid multivitamin was thicker than expected — one compared it to Pepto-Bismol.'},
+    {d:'03/22',v:'Sprouts Philadelphia',st:'PA',c:'Sprouts',cat:'Texture/Consistency',txt:'Some didn\'t like the texture of the strips.'},
+    {d:'03/22',v:'WFM Midtown Miami',st:'FL',c:'Whole Foods',cat:'Taste/Flavor',txt:'Customer felt the hair growth gummies flavor had a slightly artificial taste.'},
+    {d:'03/22',v:'WFM Jamboree',st:'CA',c:'Whole Foods',cat:'Taste/Flavor',txt:'One man said the hair growth liquid multivitamin tastes like medicine.'},
+    {d:'03/22',v:'WFM Sherman Oaks',st:'CA',c:'Whole Foods',cat:'Price/Value',txt:'A small number of shoppers thought the taste of liquid vitamins was too strong. One said she perceives the brand as expensive.'},
+    {d:'03/22',v:'WFM Littleton',st:'CO',c:'Whole Foods',cat:'Taste/Flavor',txt:'Some folks reported the raspberry LMV as strong or tasting like medicine.'},
+    {d:'03/22',v:'WFM Bee Cave',st:'TX',c:'Whole Foods',cat:'Sugar/Sweetener',txt:'A customer asked if the gummies had less sugar options. Some preferred sugar-free versions.'},
+    {d:'03/21',v:'Sprouts Denver',st:'CO',c:'Sprouts',cat:'Price/Value',txt:'Multiple shoppers commented on the price point being high compared to competitors.'},
+    {d:'03/21',v:'WFM Brea',st:'CA',c:'Whole Foods',cat:'Taste/Flavor',txt:'Customers said the Liquid Morning tasted "strong" and "vitaminy" — some liked it, others did not.'},
+    {d:'03/21',v:'WFM Roosevelt Square',st:'IL',c:'Whole Foods',cat:'Size/Dosage',txt:'A couple customers felt the bottle size was small relative to the price.'},
+    {d:'03/20',v:'Sprouts Plano',st:'TX',c:'Sprouts',cat:'Taste/Flavor',txt:'Some shoppers were not fans of the liquid vitamin taste — described as "too herbal."'},
+    {d:'03/20',v:'WFM Union Square',st:'NY',c:'Whole Foods',cat:'Price/Value',txt:'Several NYers said the products are quality but pricey — asked about bulk deals or subscriptions.'},
+    {d:'03/19',v:'Sprouts Gilbert',st:'AZ',c:'Sprouts',cat:'Sugar/Sweetener',txt:'Customers wanted more sugar-free options across the gummy line.'},
+    {d:'03/19',v:'WFM La Jolla',st:'CA',c:'Whole Foods',cat:'Ingredients/Allergens',txt:'One customer with thyroid issues was concerned about the iodine content in certain products.'},
+    {d:'03/18',v:'Erewhon Venice',st:'CA',c:'Erewhon',cat:'Price/Value',txt:'Shoppers loved the products but several mentioned the price was a barrier to regular purchase.'}
+  ];
+  const catColors={'Taste/Flavor':'#ED1C24','Sugar/Sweetener':'#F59E0B','Texture/Consistency':'#8B5CF6','Price/Value':'#3B82F6','Packaging/Labeling':'#22C55E','Size/Dosage':'#06B6D4','Freshness/Expiration':'#EC4899','Ingredients/Allergens':'#F97316','Smell':'#6366F1','Other':'#64748B'};
+  reports.forEach(r=>{
+    el.innerHTML+=`<div style="padding:12px 16px;border-bottom:1px solid var(--bd);font-size:12px;line-height:1.6">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-weight:700;color:var(--tx)">${r.v} <span style="color:var(--td);font-weight:400">(${r.st})</span></span>
+        <span style="display:flex;align-items:center;gap:8px"><span style="background:${catColors[r.cat]||'#64748B'};color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600">${r.cat}</span><span style="color:var(--td)">${r.d}</span></span>
+      </div>
+      <div style="color:var(--td)">${r.txt}</div>
+    </div>`;
+  });
+})();
+
 // PROJECTIONS CHARTS
 // ============================================================
 const projWeeks=['Mar 3','Mar 10','Mar 17','Mar 24','Mar 31'];
