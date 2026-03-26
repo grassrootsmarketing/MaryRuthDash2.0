@@ -1985,9 +1985,10 @@ function saveDashData(data){
 }
 
 function loadDashData(){
-  fetch(BLOB_URL).then(r=>r.json()).then(data=>{
+  fetch(BLOB_URL).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>{
     if(!data||!data.v||data.v<2||!data.months)return;
     console.log('Loading saved data from',data.ts,'file:',data.file);
+    try{
     
     const monthly=data.monthly;
     const chainMonthly=data.chainMonthly;
@@ -2098,11 +2099,12 @@ function loadDashData(){
       banner.classList.add('show');
       setTimeout(()=>banner.classList.remove('show'),5000);
     }
+    }catch(innerErr){console.error('Error applying saved data:',innerErr);}
   }).catch(e=>console.log('No saved data, using defaults'));
 }
 
-// Load saved data on page load (after charts are initialized)
-setTimeout(loadDashData,500);
+// Load saved data on page load - DISABLED for debugging
+// setTimeout(function(){try{loadDashData();}catch(e){console.log('Load error:',e);}},1000);
 
 function animateKPI(el,newVal){
   const raw=el.textContent.trim();
