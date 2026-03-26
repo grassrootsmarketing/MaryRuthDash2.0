@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MaryRuth Organics - Performance Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+// Wire up month buttons via event delegation (bulletproof)
+document.getElementById('monthBar26').addEventListener('click',function(e){
+  const btn=e.target.closest('.mo-btn');
+  if(!btn)return;
+  const mo=btn.getAttribute('data-mo');
+  if(mo)window.setMonth26(mo);
+});
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--r:#ED1C24;--rd:#C41920;--rl:rgba(237,28,36,.08);--bg:#0F1117;--sf:#1A1D27;--sfh:#22252F;--bd:#2A2D38;--tx:#E8E9ED;--td:#8B8E9A;--tm:#5C5F6E;--g:#22C55E;--a:#F59E0B;--b:#3B82F6;--rad:12px}
@@ -663,11 +671,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <div id="y26" class="year-panel active">
     <div class="month-bar" id="monthBar26">
       <span class="mo-label">View Month</span>
-      <button class="mo-btn active" onclick="setMonth26('YTD')">YTD</button>
-      <button class="mo-btn" onclick="setMonth26('Jan')">Jan</button>
-      <button class="mo-btn" onclick="setMonth26('Feb')">Feb</button>
-      <button class="mo-btn" onclick="setMonth26('Mar')">Mar</button>
-      <button style="margin-left:auto;padding:4px 10px;font-size:10px;background:#333;color:#888;border:1px solid #555;border-radius:4px;cursor:pointer" onclick="alert('Test: setMonth26 is '+(typeof setMonth26))">Test</button>
+      <button class="mo-btn active" data-mo="YTD">YTD</button>
+      <button class="mo-btn" data-mo="Jan">Jan</button>
+      <button class="mo-btn" data-mo="Feb">Feb</button>
+      <button class="mo-btn" data-mo="Mar">Mar</button>
     </div>
     <div class="kpi-grid" id="kpiGrid26">
       <div class="kpi-card"><div class="kpi-hdr"><div class="kpi-lbl">Total Events</div><div class="kpi-tip">?<div class="tip">Total demo events for MRO in 2026 year-to-date.</div></div></div><div class="kpi-val">902</div><div class="kpi-sub">2026 YTD</div></div>
@@ -1221,10 +1228,10 @@ const ch26m={
   'Mar':[{name:'Whole Foods',events:184,revenue:60016.34},{name:'Sprouts',events:63,revenue:7435.06},{name:'Erewhon',events:8,revenue:919.58},{name:'Central Market',events:2,revenue:186.95}]
 };
 
-function setMonth26(mo){
+window.setMonth26=function(mo){
   try{
   document.querySelectorAll('#monthBar26 .mo-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.querySelector('#monthBar26 .mo-btn[onclick*="\''+mo+'\'"]');
+  const btn=document.querySelector('#monthBar26 .mo-btn[data-mo="'+mo+'"]');
   if(btn)btn.classList.add('active');
   
   let ev,sa,un,sh,netUn,chData,stData,rgData,totalEv;
