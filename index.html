@@ -1049,10 +1049,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
             <div style="font-size:18px;font-weight:800;color:var(--tx)" id="projTitle">📅 March 2026 — 355 Events Scheduled</div>
             <div style="font-size:12px;color:var(--td);margin-top:4px" id="projSubtitle">Across 15 states · 331 confirmed · 2 need BA assignment</div>
           </div>
-          <label class="upload-btn" for="schedUpload" style="background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Upload Schedule
-          </label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <label class="upload-btn" for="schedUpload" style="background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload Schedule
+            </label>
+            <div style="font-size:11px;color:var(--td)" id="schedLastUpdate">Last Updated: 3/3/2026</div>
+          </div>
           <input type="file" id="schedUpload" accept=".xlsx,.xls" style="display:none" onchange="handleScheduleUpload(this)">
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
@@ -2276,6 +2279,10 @@ function processSchedule(rows,filename){
     banner.classList.add('show');
     setTimeout(()=>banner.classList.remove('show'),6000);
   }
+  
+  // Update last updated date
+  const schedDate=document.getElementById('schedLastUpdate');
+  if(schedDate)schedDate.textContent='Last Updated: '+new Date().toLocaleDateString();
 }
 
 function animateKPI(el,newVal){
