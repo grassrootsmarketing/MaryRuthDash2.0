@@ -1535,10 +1535,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <!-- 2026 PROJECTIONS TAB -->
     <div id="pj26" class="tc">
       <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:20px;margin-bottom:20px;border-top:3px solid #F59E0B">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div>
-            <div style="font-size:18px;font-weight:800;color:var(--tx)" id="projTitle">📅 March 2026 — 355 Events Scheduled</div>
-            <div style="font-size:12px;color:var(--td);margin-top:4px" id="projSubtitle">Across 15 states · 331 confirmed · 2 need BA assignment</div>
+            <div style="font-size:18px;font-weight:800;color:var(--tx)" id="projTitle">\U0001f4c5 March 2026 \u2014 355 Events Scheduled</div>
+            <div style="font-size:12px;color:var(--td);margin-top:4px" id="projSubtitle">Across 15 states \u00b7 331 confirmed \u00b7 2 need BA assignment</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <label class="upload-btn" for="schedUpload" style="background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4)">
@@ -1549,37 +1549,31 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
           </div>
           <input type="file" id="schedUpload" accept=".xlsx,.xls" style="display:none" onchange="handleScheduleUpload(this)">
         </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="projMonthBar">
+          <button class="mo-btn" data-pmo="Jan">Jan (Actuals)</button>
+          <button class="mo-btn" data-pmo="Feb">Feb (Actuals)</button>
+          <button class="mo-btn active" data-pmo="Mar">Mar (Schedule)</button>
+        </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-          <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px;text-align:center"><div style="font-size:22px;font-weight:800;color:#22C55E" id="projTotalEv">355</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px">Total Events</div></div>
-          <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px;text-align:center"><div style="font-size:22px;font-weight:800;color:#3B82F6">331</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px">Confirmed</div></div>
-          <div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rad);padding:14px;text-align:center"><div style="font-size:22px;font-weight:800;color:#F59E0B">15</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px">States</div></div>
+          <div style="background:var(--bg);border-radius:var(--rad);padding:14px;text-align:center;border:1px solid var(--bd)"><div style="font-size:22px;font-weight:800;color:#22C55E" id="projTotalEv">355</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px" id="projEvLabel">Scheduled Events</div></div>
+          <div style="background:var(--bg);border-radius:var(--rad);padding:14px;text-align:center;border:1px solid var(--bd)"><div style="font-size:22px;font-weight:800;color:#3B82F6" id="projRevOrConf">331</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px" id="projRevLabel">Confirmed</div></div>
+          <div style="background:var(--bg);border-radius:var(--rad);padding:14px;text-align:center;border:1px solid var(--bd)"><div style="font-size:22px;font-weight:800;color:#F59E0B" id="projStates">15</div><div style="font-size:10px;color:var(--td);text-transform:uppercase;letter-spacing:.5px">States</div></div>
         </div>
       </div>
-      </div>
-
       <div class="cg">
-        <div class="cc"><div class="ct"><span class="i">📊</span> Weekly Event Distribution by Chain</div><canvas id="c_projWeek" height="280"></canvas></div>
-        <div class="cc"><div class="ct"><span class="i">🏪</span> Events by Chain</div><canvas id="c_projChain" height="280"></canvas></div>
-        <div class="cc"><div class="ct"><span class="i">🗺️</span> Events by State</div><canvas id="c_projState" height="320"></canvas></div>
-        <div class="cc full"><div class="ct"><span class="i">📋</span> Chain × State Breakdown</div>
-          <table class="dt" style="width:100%">
-            <thead><tr><th style="text-align:left">Chain</th><th>CA</th><th>TX</th><th>FL</th><th>NY</th><th>AZ</th><th>CO</th><th>GA</th><th>IL</th><th>PA</th><th>Other</th><th>Total</th></tr></thead>
-            <tbody>
-              <tr><td style="font-weight:700;color:var(--r)">Whole Foods</td><td>43</td><td>44</td><td>25</td><td>25</td><td>16</td><td>20</td><td>18</td><td>14</td><td>14</td><td>34</td><td style="font-weight:700">253</td></tr>
-              <tr><td style="font-weight:700;color:#F97316">Sprouts</td><td>15</td><td>16</td><td>7</td><td>—</td><td>6</td><td>—</td><td>—</td><td>—</td><td>—</td><td>41</td><td style="font-weight:700">85</td></tr>
-              <tr><td style="font-weight:700;color:#8B5CF6">Erewhon</td><td>10</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="font-weight:700">10</td></tr>
-              <tr><td style="font-weight:700;color:#3B82F6">Central Market</td><td>—</td><td>6</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="font-weight:700">6</td></tr>
-              <tr><td style="font-weight:700;color:#22C55E">Independents</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>1</td><td style="font-weight:700">1</td></tr>
-              <tr style="font-weight:700;border-top:2px solid var(--bd)"><td>Total</td><td>68</td><td>66</td><td>32</td><td>25</td><td>22</td><td>20</td><td>18</td><td>14</td><td>14</td><td>76</td><td>355</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="ins-grid" style="margin-top:16px">
-        <div class="ins-card amber full">
-          <div class="ins-title"><span class="ic">💡</span> Projection vs. Actuals Context</div>
-          <div class="ins-desc" style="line-height:1.7">March 2026 has 355 scheduled events — a 30% jump over February's 274 schedule. 331 are confirmed, 2 need BA assignment, 15 have reports due, and 5 have pending payments. Whole Foods dominates with 253 events (71% of schedule). At the current 2026 efficiency rate of $207/event, March projects to ~$73,500 in revenue. Cumulative Q1 2026 would reach ~$170,000+ if March maintains efficiency — putting 2026 on pace to significantly outperform 2025's $556K full-year total. Friday is the heaviest demo day (90 events), followed by Wednesday (59) and Monday (50).</div>
+        <div class="cc"><div class="ct"><span class="i">\U0001f4ca</span> <span id="projWeekTitle">Weekly Event Distribution by Chain</span></div><canvas id="c_projWeek" height="280"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">\U0001f3ea</span> Events by Chain</div><canvas id="c_projChain" height="280"></canvas></div>
+        <div class="cc"><div class="ct"><span class="i">\U0001f5fa\ufe0f</span> Events by State</div><canvas id="c_projState" height="320"></canvas></div>
+        <div class="cc full"><div class="ct"><span class="i">\U0001f4cb</span> Chain \u00d7 State Breakdown</div>
+          <table class="dt" style="width:100%"><thead id="projTableHead"><tr><th style="text-align:left">Chain</th><th>CA</th><th>TX</th><th>FL</th><th>NY</th><th>AZ</th><th>CO</th><th>GA</th><th>IL</th><th>PA</th><th>Other</th><th>Total</th></tr></thead>
+          <tbody id="projTableBody">
+            <tr><td style="font-weight:700;color:var(--r)">Whole Foods</td><td>43</td><td>44</td><td>25</td><td>25</td><td>16</td><td>20</td><td>18</td><td>14</td><td>14</td><td>34</td><td style="font-weight:700">253</td></tr>
+            <tr><td style="font-weight:700;color:#F97316">Sprouts</td><td>15</td><td>16</td><td>7</td><td>\u2014</td><td>6</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>41</td><td style="font-weight:700">85</td></tr>
+            <tr><td style="font-weight:700;color:#8B5CF6">Erewhon</td><td>10</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td style="font-weight:700">10</td></tr>
+            <tr><td style="font-weight:700;color:#3B82F6">Central Market</td><td>\u2014</td><td>6</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td style="font-weight:700">6</td></tr>
+            <tr><td style="font-weight:700;color:#22C55E">Independents</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>1</td><td style="font-weight:700">1</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--bd)"><td>Total</td><td>68</td><td>66</td><td>32</td><td>25</td><td>22</td><td>20</td><td>18</td><td>14</td><td>14</td><td>76</td><td>355</td></tr>
+          </tbody></table>
         </div>
       </div>
     </div>
@@ -2001,16 +1995,132 @@ function renderQI(){
 function filterQI(mo){window._qiActiveMonth=mo;document.querySelectorAll('.qi-mbtn').forEach(b=>b.classList.remove('active'));const btn=document.querySelector('.qi-mbtn[onclick*="\''+mo+'\'"]');if(btn)btn.classList.add('active');renderQI();}
 function filterQICat(cat){window._qiActiveCat=cat;document.querySelectorAll('.qi-cbtn').forEach(b=>b.classList.remove('active'));const btn=document.querySelector('.qi-cbtn[onclick*="\''+cat+'\'"]');if(btn)btn.classList.add('active');renderQI();}
 
-// PROJECTIONS CHARTS
+// PROJECTIONS CHARTS + MONTH SWITCHING
+
+// Wire up projections month buttons
+document.getElementById('projMonthBar').addEventListener('click',function(e){
+  const btn=e.target.closest('.mo-btn');
+  if(!btn)return;
+  const mo=btn.getAttribute('data-pmo');
+  if(mo)setProjMonth(mo);
+});
+
+function setProjMonth(mo){
+  // Highlight active button
+  document.querySelectorAll('#projMonthBar .mo-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector('#projMonthBar .mo-btn[data-pmo="'+mo+'"]');
+  if(btn)btn.classList.add('active');
+  
+  const MF=window._mf||{};
+  const months=MF.months||M26;
+  const mIdx=months.indexOf(mo);
+  const isSchedule=(mo==='Mar'); // Mar is schedule, Jan/Feb are actuals
+  
+  if(!isSchedule && mIdx>=0){
+    // ACTUALS MODE - show actual performance from analytics data
+    const md=(MF.monthly&&MF.monthly[mo])?MF.monthly[mo]:{ev:d26.ev[mIdx],sa:d26.sa[mIdx],un:d26.un[mIdx],sh:d26.sh[mIdx]};
+    const ev=md.ev, sa=md.sa, un=md.un;
+    const stData=(MF.stByMonth&&MF.stByMonth[mo])?MF.stByMonth[mo]:(st26m&&st26m[mo])?st26m[mo]:st26;
+    const chData=(MF.chByMonth&&MF.chByMonth[mo])?MF.chByMonth[mo]:(ch26m&&ch26m[mo])?ch26m[mo]:ch26;
+    const rgData=(MF.rgByMonth&&MF.rgByMonth[mo])?MF.rgByMonth[mo]:(rg26m&&rg26m[mo])?rg26m[mo]:rg26;
+    const stSet=new Set(stData.map(s=>s.s));
+    
+    // Update header
+    document.getElementById('projTitle').textContent='\u0001f4ca '+mo+' 2026 \u2014 Actual Performance';
+    document.getElementById('projSubtitle').textContent=ev+' events completed across '+stSet.size+' states';
+    document.getElementById('projTotalEv').textContent=ev;
+    document.getElementById('projEvLabel').textContent='Actual Events';
+    document.getElementById('projRevOrConf').textContent='$'+Math.round(sa).toLocaleString();
+    document.getElementById('projRevLabel').textContent='Revenue';
+    document.getElementById('projStates').textContent=stSet.size;
+    document.getElementById('projWeekTitle').textContent='Retailer Breakdown \u2014 '+mo;
+    
+    // Update chain chart (as simple bar, not weekly)
+    try{const c=Chart.getChart(document.getElementById('c_projWeek'));if(c){
+      c.data.labels=chData.map(x=>x.name);
+      c.data.datasets=[{data:chData.map(x=>x.events),backgroundColor:chData.map(x=>CC[x.name]),borderRadius:4,barPercentage:.7}];
+      c.options.scales.x.stacked=false;c.options.scales.y.stacked=false;
+      c.update('active');
+    }}catch(e){}
+    
+    // Update chain doughnut by revenue
+    try{const c=Chart.getChart(document.getElementById('c_projChain'));if(c){
+      c.data.labels=chData.map(x=>x.name);
+      c.data.datasets=[{data:chData.map(x=>x.revenue),backgroundColor:chData.map(x=>CC[x.name]),borderRadius:4,barPercentage:.7}];
+      c.update('active');
+    }}catch(e){}
+    
+    // Update state chart
+    try{const c=Chart.getChart(document.getElementById('c_projState'));if(c){
+      c.data.labels=stData.map(s=>s.s);
+      c.data.datasets=[{data:stData.map(s=>s.e),backgroundColor:stData.map((_,i)=>i<3?'#ED1C24':i<6?'#F97316':'#3B82F6'),borderRadius:4,barPercentage:.7}];
+      c.update('active');
+    }}catch(e){}
+    
+    // Update table
+    const chains=['Whole Foods','Sprouts','Central Market','Erewhon','Independents'];
+    const chainColors={'Whole Foods':'var(--r)','Sprouts':'#F97316','Erewhon':'#8B5CF6','Central Market':'#3B82F6','Independents':'#22C55E'};
+    const topSt=stData.slice(0,9).map(s=>s.s);
+    const thead=document.getElementById('projTableHead');
+    const tbody=document.getElementById('projTableBody');
+    if(thead)thead.innerHTML='<tr><th style="text-align:left">Chain</th>'+topSt.map(s=>'<th>'+s+'</th>').join('')+'<th>Other</th><th>Total</th><th>Revenue</th></tr>';
+    if(tbody){
+      tbody.innerHTML='';
+      chData.forEach(cd=>{
+        const stCounts=topSt.map(()=>'\u2014');// We don't have per-chain-per-state for actuals easily
+        tbody.innerHTML+='<tr><td style="font-weight:700;color:'+(chainColors[cd.name]||'var(--tx)')+'">'+cd.name+'</td>'+stCounts.map(c=>'<td>'+c+'</td>').join('')+'<td>\u2014</td><td style="font-weight:700">'+cd.events+'</td><td style="font-weight:700">$'+Math.round(cd.revenue).toLocaleString()+'</td></tr>';
+      });
+      tbody.innerHTML+='<tr style="font-weight:700;border-top:2px solid var(--bd)"><td>Total</td>'+topSt.map(s=>{const d=stData.find(x=>x.s===s);return'<td>'+(d?d.e:0)+'</td>';}).join('')+'<td>\u2014</td><td>'+ev+'</td><td>$'+Math.round(sa).toLocaleString()+'</td></tr>';
+    }
+  }else{
+    // SCHEDULE MODE - restore the default schedule view
+    document.getElementById('projTitle').textContent='\U0001f4c5 March 2026 \u2014 355 Events Scheduled';
+    document.getElementById('projSubtitle').textContent='Across 15 states \u00b7 331 confirmed \u00b7 2 need BA assignment';
+    document.getElementById('projTotalEv').textContent='355';
+    document.getElementById('projEvLabel').textContent='Scheduled Events';
+    document.getElementById('projRevOrConf').textContent='331';
+    document.getElementById('projRevLabel').textContent='Confirmed';
+    document.getElementById('projStates').textContent='15';
+    document.getElementById('projWeekTitle').textContent='Weekly Event Distribution by Chain';
+    
+    // Restore schedule charts
+    try{const c=Chart.getChart(document.getElementById('c_projWeek'));if(c){
+      c.data.labels=projWeeks;
+      c.data.datasets=projWeekDatasets;
+      c.options.scales.x.stacked=true;c.options.scales.y.stacked=true;
+      c.update('active');
+    }}catch(e){}
+    try{const c=Chart.getChart(document.getElementById('c_projChain'));if(c){
+      c.data.labels=['Whole Foods','Sprouts','Erewhon','Central Market','Independents'];
+      c.data.datasets=[{data:[253,85,10,6,1],backgroundColor:[CC['Whole Foods'],CC['Sprouts'],CC['Erewhon'],CC['Central Market'],CC['Independents']],borderRadius:4,barPercentage:.7}];
+      c.update('active');
+    }}catch(e){}
+    try{const c=Chart.getChart(document.getElementById('c_projState'));if(c){
+      c.data.labels=projStLabels;
+      c.data.datasets=[{data:projStData,backgroundColor:projStLabels.map((_,i)=>i<3?'#ED1C24':i<6?'#F97316':'#3B82F6'),borderRadius:4,barPercentage:.7}];
+      c.update('active');
+    }}catch(e){}
+    
+    // Restore schedule table
+    const thead=document.getElementById('projTableHead');
+    const tbody=document.getElementById('projTableBody');
+    if(thead)thead.innerHTML='<tr><th style="text-align:left">Chain</th><th>CA</th><th>TX</th><th>FL</th><th>NY</th><th>AZ</th><th>CO</th><th>GA</th><th>IL</th><th>PA</th><th>Other</th><th>Total</th></tr>';
+    if(tbody)tbody.innerHTML='<tr><td style="font-weight:700;color:var(--r)">Whole Foods</td><td>43</td><td>44</td><td>25</td><td>25</td><td>16</td><td>20</td><td>18</td><td>14</td><td>14</td><td>34</td><td style="font-weight:700">253</td></tr><tr><td style="font-weight:700;color:#F97316">Sprouts</td><td>15</td><td>16</td><td>7</td><td>\u2014</td><td>6</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>41</td><td style="font-weight:700">85</td></tr><tr><td style="font-weight:700;color:#8B5CF6">Erewhon</td><td>10</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td style="font-weight:700">10</td></tr><tr><td style="font-weight:700;color:#3B82F6">Central Market</td><td>\u2014</td><td>6</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td style="font-weight:700">6</td></tr><tr><td style="font-weight:700;color:#22C55E">Independents</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>\u2014</td><td>1</td><td style="font-weight:700">1</td></tr><tr style="font-weight:700;border-top:2px solid var(--bd)"><td>Total</td><td>68</td><td>66</td><td>32</td><td>25</td><td>22</td><td>20</td><td>18</td><td>14</td><td>14</td><td>76</td><td>355</td></tr>';
+  }
+}
+
+// Store schedule chart data for restoring
 // ============================================================
+// Store schedule chart data for restoring
 const projWeeks=['Mar 3','Mar 10','Mar 17','Mar 24','Mar 31'];
-new Chart(document.getElementById('c_projWeek'),{type:'bar',data:{labels:projWeeks,datasets:[
+const projWeekDatasets=[
   {label:'Whole Foods',data:[56,72,59,49,17],backgroundColor:CC['Whole Foods'],borderRadius:3,barPercentage:.7},
   {label:'Sprouts',data:[19,24,18,17,7],backgroundColor:CC['Sprouts'],borderRadius:3,barPercentage:.7},
   {label:'Central Market',data:[0,2,2,2,0],backgroundColor:CC['Central Market'],borderRadius:3,barPercentage:.7},
   {label:'Erewhon',data:[2,3,3,2,0],backgroundColor:CC['Erewhon'],borderRadius:3,barPercentage:.7},
   {label:'Independents',data:[0,0,0,0,0],backgroundColor:CC['Independents'],borderRadius:3,barPercentage:.7}
-]},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'}}}});
+];
+new Chart(document.getElementById('c_projWeek'),{type:'bar',data:{labels:projWeeks,datasets:projWeekDatasets},options:{responsive:true,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{position:'bottom'}}}});
 
 new Chart(document.getElementById('c_projChain'),{type:'bar',data:{labels:['Whole Foods','Sprouts','Erewhon','Central Market','Independents'],datasets:[{data:[253,85,10,6,1],backgroundColor:[CC['Whole Foods'],CC['Sprouts'],CC['Erewhon'],CC['Central Market'],CC['Independents']],borderRadius:4,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+' events'}}},scales:{x:{beginAtZero:true}},animation:{onComplete:function(){const ctx=this.ctx;ctx.font='bold 12px system-ui';ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--tx').trim()||'#fff';ctx.textBaseline='middle';this.data.datasets[0].data.forEach((v,i)=>{const meta=this.getDatasetMeta(0).data[i];ctx.fillText(v+' events',meta.x+8,meta.y)})}}}});
 
