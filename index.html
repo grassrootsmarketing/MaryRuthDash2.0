@@ -2428,11 +2428,18 @@ function handleUpload(input){
   reader.onload=function(e){
     try{
       const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      const rawSheet=wb.Sheets['Raw'];
-      if(!rawSheet){alert('No "Raw" sheet found. Please upload the analytics report.');return;}
-      const rawData=XLSX.utils.sheet_to_json(rawSheet);
-      if(rawData.length===0){alert('No data rows found in Raw sheet.');return;}
-      try{processUpload(rawData,file.name);}catch(err){alert('Error processing data: '+err.message);console.error(err);}
+      // Auto-detect: if it has a Raw sheet, it's analytics. If Scheduled Events, it's a schedule.
+      if(wb.Sheets['Raw']){
+        const rawData=XLSX.utils.sheet_to_json(wb.Sheets['Raw']);
+        if(rawData.length===0){alert('No data rows found in Raw sheet.');return;}
+        try{processUpload(rawData,file.name);}catch(err){alert('Error processing analytics data: '+err.message);console.error(err);}
+      }else if(wb.Sheets['Scheduled Events']){
+        const schedData=XLSX.utils.sheet_to_json(wb.Sheets['Scheduled Events']);
+        if(schedData.length===0){alert('No data rows found in Scheduled Events sheet.');return;}
+        try{processSchedule(schedData,file.name);}catch(err){alert('Error processing schedule: '+err.message);console.error(err);}
+      }else{
+        alert('Unrecognized file format. Expected a Promomash analytics report (with "Raw" sheet) or a schedule file (with "Scheduled Events" sheet).\n\nSheets found: '+wb.SheetNames.join(', '));
+      }
     }catch(err){
       alert('Error reading file: '+err.message);
     }
