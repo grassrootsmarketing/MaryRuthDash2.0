@@ -2657,6 +2657,17 @@ function processUpload(rawData,filename){
     window._mf.rgByMonth[mo]=Object.entries(mRegions).map(([name,events])=>({name,events,color:rgColors2[name]||'#666'})).sort((a,b)=>b.events-a.events);
   });
   
+  // Rebuild Projections month bar with actuals for all uploaded months
+  const projBar=document.getElementById('projMonthBar');
+  if(projBar){
+    let projBtns='';
+    activeMonths.forEach(m=>{
+      projBtns+='<button class="mo-btn" data-pmo="'+m+'">'+m+' (Actuals)</button>';
+    });
+    projBtns+='<button class="mo-btn active" data-pmo="__sched__">Projected Schedule</button>';
+    projBar.innerHTML=projBtns;
+  }
+  
   // Switch to 2026 tab
   switchYear('y26');
 }
@@ -2712,8 +2723,8 @@ function loadDashData(){
     // Update month bar buttons
     const bar=document.getElementById('monthBar26');
     if(bar){
-      let btns='<span class="mo-label">View Month</span><button class="mo-btn active" onclick="setMonth26(\'YTD\')">YTD</button>';
-      activeMonths.forEach(m=>{btns+='<button class="mo-btn" onclick="setMonth26(\''+m+'\')">'+m+'</button>';});
+      let btns='<span class="mo-label">View Month</span><button class="mo-btn active" data-mo="YTD">YTD</button>';
+      activeMonths.forEach(m=>{btns+='<button class="mo-btn" data-mo="'+m+'">'+m+'</button>';});
       bar.innerHTML=btns;
     }
     
@@ -2776,6 +2787,17 @@ function loadDashData(){
       chByMonth:{},stByMonth:{},rgByMonth:{}
     };
     window._savedData=data;
+    
+    // Rebuild Projections month bar
+    const projBar=document.getElementById('projMonthBar');
+    if(projBar){
+      let projBtns='';
+      activeMonths.forEach(m=>{
+        projBtns+='<button class="mo-btn" data-pmo="'+m+'">'+m+' (Actuals)</button>';
+      });
+      projBtns+='<button class="mo-btn active" data-pmo="__sched__">Projected Schedule</button>';
+      projBar.innerHTML=projBtns;
+    }
     
     // Show subtle indicator
     const banner=document.getElementById('uploadBanner');
